@@ -1,7 +1,10 @@
 [gd_scene format=3 uid="uid://cad6ou64qr2ju"]
 
 [ext_resource type="Script" uid="uid://b4hj37cqn1d2t" path="res://player.gd" id="1_a202f"]
+[ext_resource type="Material" uid="uid://c1vf8cyydcjor" path="res://Materials/floor_material.tres" id="1_jka67"]
 [ext_resource type="Script" uid="uid://barhbxwb14d3p" path="res://pause_menu.gd" id="2_noarx"]
+[ext_resource type="Material" uid="uid://t7nhhrhwq31l" path="res://Materials/gun_material.tres" id="3_i5arm"]
+[ext_resource type="Material" uid="uid://qm5pucavpem" path="res://Materials/target_material.tres" id="4_wc5p8"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_4xowi"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -19,7 +22,7 @@ glow_enabled = true
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4xowi"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_4xowi"]
-size = Vector3(0.1, 0.1, 0.6)
+size = Vector3(0.1, 0.1, 0.5)
 
 [sub_resource type="SphereMesh" id="SphereMesh_a202f"]
 
@@ -36,6 +39,7 @@ shadow_enabled = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5019839, 0)
 use_collision = true
 size = Vector3(50, 1, 50)
+material = ExtResource("1_jka67")
 
 [node name="Player" type="CharacterBody3D" parent="." unique_id=1651511319]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8117771, 0)
@@ -49,34 +53,55 @@ shape = SubResource("CapsuleShape3D_4xowi")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8674773, 0)
 
 [node name="Gun" type="MeshInstance3D" parent="Player/Camera3D" unique_id=1703807613]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.36446023, -0.24640608, -0.5075474)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.36446023, -0.17177403, -0.53212756)
 mesh = SubResource("BoxMesh_4xowi")
+surface_material_override/0 = ExtResource("3_i5arm")
 
 [node name="Target1" type="MeshInstance3D" parent="." unique_id=436864458 groups=["Targets"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.079391, 1.4508967, -8.394179)
 mesh = SubResource("SphereMesh_a202f")
+surface_material_override/0 = ExtResource("4_wc5p8")
 
 [node name="Target2" type="MeshInstance3D" parent="." unique_id=1028605617 groups=["Targets"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9439962, 2.9017935, -10.266437)
 mesh = SubResource("SphereMesh_a202f")
+surface_material_override/0 = ExtResource("4_wc5p8")
 
 [node name="Target3" type="MeshInstance3D" parent="." unique_id=1908591020 groups=["Targets"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5004005, 4.35269, -13.090519)
 mesh = SubResource("SphereMesh_a202f")
+surface_material_override/0 = ExtResource("4_wc5p8")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1392470494]
 
-[node name="PauseMenu" type="Control" parent="UI" unique_id=1257894202 node_paths=PackedStringArray("player")]
-process_mode = 3
-layout_direction = 2
-layout_mode = 3
+[node name="CrosshairContainer" type="CenterContainer" parent="UI" unique_id=1793271217]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="ColorRect" type="ColorRect" parent="UI/CrosshairContainer" unique_id=574838950]
+custom_minimum_size = Vector2(4, 4)
+layout_mode = 2
+color = Color(12.03035, 0.00059141894, 6.6810884, 1)
+
+[node name="PauseMenu" type="Control" parent="UI" unique_id=1257894202 node_paths=PackedStringArray("player")]
+process_mode = 3
+custom_minimum_size = Vector2(450, 300)
+layout_direction = 2
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+size_flags_stretch_ratio = 1.01
 script = ExtResource("2_noarx")
 player = NodePath("../../Player")
 
