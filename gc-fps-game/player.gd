@@ -1,0 +1,104 @@
+extends CharacterBody3D
+
+const SPEED = 5.0
+const JUMP_VELOCITY = 4.5
+
+# Get the gravity from the project settings to be synced with RigidBody nodes.
+var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
+
+@export var mouse_sensitivity: float = 0.002
+@export var target_radius: float = 1.0
+
+@onready var camera = $Camera3D
+# @onready var raycaster = $CustomRaycaster # Uncomment this once your C++ node is compiled
+
+var total_shots: int = 0
+var total_hits: int = 0
+
+func _ready() -> void:
+	# Lock the mouse to the center of the screen
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+func _input(event: InputEvent) -> void:
+	# Handle Mouselook
+	if event is InputEventMouseMotion:
+		rotate_y(-event.relative.x * mouse_sensitivity)
+		camera.rotate_x(-event.relative.y * mouse_sensitivity)
+		# Prevent the camera from flipping upside down
+		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-89), deg_to_rad(89))
+		
+
+func _physics_process(delta: float) -> void:
+	# Add the gravity.
+	if not is_on_floor():
+		velocity.y -= gravity * delta
+
+	# Handle Jump.
+	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+
+	# Get the input direction and handle the movement/deceleration.
+	var input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	
+	# Transform the input direction to be relative to where the player is currently facing
+	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	
+	if direction:
+		velocity.x = direction.x * SPEED
+		velocity.z = direction.z * SPEED
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.z = move_toward(velocity.z, 0, SPEED)
+
+	# Godot's built-in physics movement execution
+	move_and_slide()
+
+func _process(_delta: float) -> void:
+	if Input.is_action_just_pressed("shoot"):
+		fire_weapon()
+
+func fire_weapon() -> void:
+	total_shots += 1
+	
+	var origin = camera.global_position
+	var direction = -camera.global_transform.basis.z 
+	
+	var closest_distance = INF
+	var hit_target = null
+	
+	var targets = get_tree().get_nodes_in_group("Targets")
+	
+	for target in targets:
+		var sphere_center = target.global_position
+		
+		# NOTE: Replace the block below with your C++ function call once ready
+		# var hit_dist = raycaster.check_sphere_hit(origin, direction, sphere_center, target_radius)
+		
+		# --- TEMPORARY DISTANCE CHECK FOR PROTOTYPING ---
+		# This just checks if you are aiming *generally* at the target to test the loop
+		var vector_to_target = sphere_center - origin
+		var distance_to_target = vector_to_target.length()
+		var angle = direction.angle_to(vector_to_target)
+		
+		var hit_dist = -1.0
+		if angle < 0.1: # Very rough "cone" intersection
+			hit_dist = distance_to_target
+		# ------------------------------------------------
+			
+		if hit_dist > 0.0 and hit_dist < closest_distance:
+			closest_distance = hit_dist
+			hit_target = target
+			
+	if hit_target != null:
+		total_hits += 1
+		print("Hit! Target: ", hit_target.name)
+		hit_target.queue_free() 
+	else:
+		print("Miss.")
+		
+	update_accuracy_ui()
+
+func update_accuracy_ui() -> void:
+	if total_shots > 0:
+		var accuracy = (float(total_hits) / float(total_shots)) * 100.0
+		print("Accuracy: %.2f%%" % accuracy)

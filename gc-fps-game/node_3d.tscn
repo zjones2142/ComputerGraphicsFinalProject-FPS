@@ -1,3 +1,156 @@
 [gd_scene format=3 uid="uid://cad6ou64qr2ju"]
 
-[node name="Node3D" type="Node3D" unique_id=1851330346]
+[ext_resource type="Script" uid="uid://b4hj37cqn1d2t" path="res://player.gd" id="1_a202f"]
+[ext_resource type="Script" uid="uid://barhbxwb14d3p" path="res://pause_menu.gd" id="2_noarx"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_4xowi"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_a202f"]
+sky_material = SubResource("ProceduralSkyMaterial_4xowi")
+
+[sub_resource type="Environment" id="Environment_noarx"]
+background_mode = 2
+sky = SubResource("Sky_a202f")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4xowi"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_4xowi"]
+size = Vector3(0.1, 0.1, 0.6)
+
+[sub_resource type="SphereMesh" id="SphereMesh_a202f"]
+
+[node name="3DRoot" type="Node3D" unique_id=1354301207]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=166516079]
+environment = SubResource("Environment_noarx")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1241505659]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Floor" type="CSGBox3D" parent="." unique_id=282246807]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5019839, 0)
+use_collision = true
+size = Vector3(50, 1, 50)
+
+[node name="Player" type="CharacterBody3D" parent="." unique_id=1651511319]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8117771, 0)
+script = ExtResource("1_a202f")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=1762583071]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3327322, 0)
+shape = SubResource("CapsuleShape3D_4xowi")
+
+[node name="Camera3D" type="Camera3D" parent="Player" unique_id=512680171]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8674773, 0)
+
+[node name="Gun" type="MeshInstance3D" parent="Player/Camera3D" unique_id=1703807613]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.36446023, -0.24640608, -0.5075474)
+mesh = SubResource("BoxMesh_4xowi")
+
+[node name="Target1" type="MeshInstance3D" parent="." unique_id=436864458 groups=["Targets"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.079391, 1.4508967, -8.394179)
+mesh = SubResource("SphereMesh_a202f")
+
+[node name="Target2" type="MeshInstance3D" parent="." unique_id=1028605617 groups=["Targets"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9439962, 2.9017935, -10.266437)
+mesh = SubResource("SphereMesh_a202f")
+
+[node name="Target3" type="MeshInstance3D" parent="." unique_id=1908591020 groups=["Targets"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5004005, 4.35269, -13.090519)
+mesh = SubResource("SphereMesh_a202f")
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1392470494]
+
+[node name="PauseMenu" type="Control" parent="UI" unique_id=1257894202 node_paths=PackedStringArray("player")]
+process_mode = 3
+layout_direction = 2
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("2_noarx")
+player = NodePath("../../Player")
+
+[node name="MainPanel" type="VBoxContainer" parent="UI/PauseMenu" unique_id=171487588]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="ResumeButton" type="Button" parent="UI/PauseMenu/MainPanel" unique_id=1966056370]
+layout_mode = 2
+text = "Resume"
+
+[node name="SettingsButton" type="Button" parent="UI/PauseMenu/MainPanel" unique_id=1835668269]
+layout_mode = 2
+text = "Settings"
+
+[node name="ExitButton" type="Button" parent="UI/PauseMenu/MainPanel" unique_id=368018539]
+layout_mode = 2
+text = "Exit Game"
+
+[node name="SettingsPanel" type="Panel" parent="UI/PauseMenu" unique_id=67499840]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_right = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TabContainer" type="TabContainer" parent="UI/PauseMenu/SettingsPanel" unique_id=546286979]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+current_tab = 0
+
+[node name="Video" type="VBoxContainer" parent="UI/PauseMenu/SettingsPanel/TabContainer" unique_id=5033098]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="DisplayModeLabel" type="Label" parent="UI/PauseMenu/SettingsPanel/TabContainer/Video" unique_id=395598054]
+layout_mode = 2
+text = "Display Mode:"
+
+[node name="WindowModeDropdown" type="OptionButton" parent="UI/PauseMenu/SettingsPanel/TabContainer/Video" unique_id=912278774]
+layout_mode = 2
+
+[node name="PlayerOptions" type="VBoxContainer" parent="UI/PauseMenu/SettingsPanel/TabContainer" unique_id=1087671265]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="MouseSensLabel" type="Label" parent="UI/PauseMenu/SettingsPanel/TabContainer/PlayerOptions" unique_id=924770214]
+layout_mode = 2
+text = "Mouse Sensitivity:"
+
+[node name="SensitivitySlider" type="HSlider" parent="UI/PauseMenu/SettingsPanel/TabContainer/PlayerOptions" unique_id=2019435080]
+layout_mode = 2
+max_value = 0.01
+step = 0.0
+
+[node name="BackButton" type="Button" parent="UI/PauseMenu/SettingsPanel" unique_id=1450557331]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -31.0
+offset_right = 45.0
+grow_vertical = 0
+text = "Back"
