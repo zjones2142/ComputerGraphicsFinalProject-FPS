@@ -175,13 +175,12 @@ layout_mode = 2
 layout_mode = 2
 text = "UI Scale:"
 
-[node name="UIScaleSlider" type="SpinBox" parent="UI/PauseMenu/SettingsPanel/TabContainer/Video" unique_id=708884265]
+[node name="UIScaleSlider" type="HSlider" parent="UI/PauseMenu/SettingsPanel/TabContainer/Video" unique_id=708884265]
 layout_mode = 2
-min_value = 1.0
-max_value = 5.0
-step = 0.1
+min_value = 0.5
+max_value = 2.0
+step = 0.05
 value = 1.0
-suffix = "x"
 
 [node name="PlayerOptions" type="VBoxContainer" parent="UI/PauseMenu/SettingsPanel/TabContainer" unique_id=1087671265]
 visible = false

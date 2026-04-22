@@ -10,9 +10,9 @@ var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 @export var target_radius: float = 1.0
 
 @onready var camera = $Camera3D
-@onready var accuracy_label = $"../UI/HUD/AccuracyLabel" #displays accuracy
-@onready var misses_label = $"../UI/HUD/MissesLabel" #displays misses on the screen
-@onready var fps_label = $"../UI/HUD/FPSLabel" #displays a fps counter for the user
+@onready var accuracy_label = $"../UI/HUD/AccuracyLabel"
+@onready var misses_label = $"../UI/HUD/MissesLabel"
+@onready var fps_label = $"../UI/HUD/FPSLabel"
 # @onready var raycaster = $CustomRaycaster # Uncomment this once your C++ node is compiled
 
 var total_shots: int = 0

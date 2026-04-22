@@ -8,8 +8,13 @@ extends Control
 @onready var sensitivity_slider = $SettingsPanel/TabContainer/PlayerOptions/SensitivitySlider
 @onready var window_mode_dropdown = $SettingsPanel/TabContainer/Video/WindowModeDropdown
 @onready var resolution_dropdown = $SettingsPanel/TabContainer/Video/ResolutionDropdown
-@onready var ui_scale_slider = $SettingsPanel/TabContainer/Video/UIScaleSlider
-@onready var ui_layer = $"../UI"
+@onready var ui_scale_slider: SpinBox = $SettingsPanel/TabContainer/Video/UIScaleSlider
+@onready var tab_container = $SettingsPanel/TabContainer  # for tab button font scaling
+@onready var all_ui_nodes: Array = []
+@onready var all_spinboxes: Array = []
+
+const BASE_FONT_SIZE: int = 20
+const BASE_MIN_SIZE: Vector2 = Vector2(450, 300)
 
 var resolutions = [
 	Vector2i(1280, 720),
@@ -23,6 +28,19 @@ func _ready() -> void:
 	# Hide the menu when the game starts
 	hide()
 	settings_panel.hide()
+	
+	# Collect HUD labels to resize
+	var ui = get_parent()
+	
+	# HUD labels
+	all_ui_nodes = [
+		ui.get_node("HUD/AccuracyLabel"),
+		ui.get_node("HUD/MissesLabel"),
+		ui.get_node("HUD/FPSLabel"),
+	]
+	
+	# Pause menu buttons and labels — collect every Label and Button recursively
+	_collect_text_nodes(self, all_ui_nodes)
 	
 	# Populate the Video Dropdown
 	window_mode_dropdown.add_item("Windowed")
@@ -45,6 +63,15 @@ func _ready() -> void:
 	resolution_dropdown.item_selected.connect(_on_resolution_selected)
 	ui_scale_slider.value_changed.connect(_on_ui_scale_changed)
 
+# Recursively collect Labels, Buttons, OptionButtons, and SpinBoxes
+func _collect_text_nodes(node: Node, result: Array) -> void:
+	for child in node.get_children():
+		if child is Label or child is Button or child is OptionButton:
+			result.append(child)
+		elif child is SpinBox:
+			all_spinboxes.append(child)
+		_collect_text_nodes(child, result)
+		
 func _input(event: InputEvent) -> void:
 	# 'ui_cancel' is mapped to Escape by default
 	if event.is_action_pressed("ui_cancel"):
@@ -106,5 +133,25 @@ func _on_resolution_selected(index: int) -> void:
 	DisplayServer.window_set_position((screen_size - res) / 2)
 
 func _on_ui_scale_changed(value: float) -> void:
-	if ui_layer:
-		ui_layer.scale = Vector2(value, value)
+	var new_size = int(BASE_FONT_SIZE * value)
+
+	# Scale labels, buttons, dropdowns
+	for node in all_ui_nodes:
+		if node:
+			node.add_theme_font_size_override("font_size", new_size)
+
+	# Scale tab buttons
+	tab_container.add_theme_font_size_override("font_size", new_size)
+
+	# Scale each SpinBox — both the box itself and its internal LineEdit
+	for spinbox in all_spinboxes:
+		if spinbox:
+			spinbox.add_theme_font_size_override("font_size", new_size)
+			var line_edit = spinbox.get_line_edit()
+			if line_edit:
+				line_edit.add_theme_font_size_override("font_size", new_size)
+
+	# Scale and re-center the pause menu window
+	custom_minimum_size = BASE_MIN_SIZE * value
+	size = BASE_MIN_SIZE * value
+	set_anchors_and_offsets_preset(Control.PRESET_CENTER)
