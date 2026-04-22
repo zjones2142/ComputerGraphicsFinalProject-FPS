@@ -74,6 +74,31 @@ surface_material_override/0 = ExtResource("4_wc5p8")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1392470494]
 
+[node name="HUD" type="HBoxContainer" parent="UI" unique_id=2073250491]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_bottom = 60.0
+grow_horizontal = 0
+
+[node name="AccuracyLabel" type="Label" parent="UI/HUD" unique_id=1434544150]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Accuracy: 0.0%"
+
+[node name="MissesLabel" type="Label" parent="UI/HUD" unique_id=1926740360]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
+theme_override_font_sizes/font_size = 20
+text = "Misses: 0"
+
+[node name="FPSLabel" type="Label" parent="UI/HUD" unique_id=456738235]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 1, 0.3, 1)
+theme_override_font_sizes/font_size = 20
+text = "FPS: 0"
+
 [node name="CrosshairContainer" type="CenterContainer" parent="UI" unique_id=1793271217]
 anchors_preset = 15
 anchor_right = 1.0
@@ -148,6 +173,24 @@ current_tab = 0
 [node name="Video" type="VBoxContainer" parent="UI/PauseMenu/SettingsPanel/TabContainer" unique_id=5033098]
 layout_mode = 2
 metadata/_tab_index = 0
+
+[node name="ResolutionLabel" type="Label" parent="UI/PauseMenu/SettingsPanel/TabContainer/Video" unique_id=1659662762]
+layout_mode = 2
+text = "Resolution:"
+
+[node name="ResolutionDropdown" type="OptionButton" parent="UI/PauseMenu/SettingsPanel/TabContainer/Video" unique_id=1750104219]
+layout_mode = 2
+
+[node name="UIScaleLabel" type="Label" parent="UI/PauseMenu/SettingsPanel/TabContainer/Video" unique_id=87101101]
+layout_mode = 2
+text = "UI Scale:"
+
+[node name="UIScaleSlider" type="HSlider" parent="UI/PauseMenu/SettingsPanel/TabContainer/Video" unique_id=708884265]
+layout_mode = 2
+min_value = 0.5
+max_value = 2.0
+step = 0.05
+value = 1.0
 
 [node name="DisplayModeLabel" type="Label" parent="UI/PauseMenu/SettingsPanel/TabContainer/Video" unique_id=395598054]
 layout_mode = 2

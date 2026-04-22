@@ -7,6 +7,17 @@ extends Control
 @onready var settings_panel = $SettingsPanel
 @onready var sensitivity_slider = $SettingsPanel/TabContainer/PlayerOptions/SensitivitySlider
 @onready var window_mode_dropdown = $SettingsPanel/TabContainer/Video/WindowModeDropdown
+@onready var resolution_dropdown = $SettingsPanel/TabContainer/Video/ResolutionDropdown
+@onready var ui_scale_slider = $SettingsPanel/TabContainer/Video/UIScaleSlider
+@onready var ui_layer = $"../UI"
+
+var resolutions = [
+	Vector2i(1280, 720),
+	Vector2i(1600, 900),
+	Vector2i(1920, 1080),
+	Vector2i(2560, 1440),
+	Vector2i(3840, 2160),
+]
 
 func _ready() -> void:
 	# Hide the menu when the game starts
@@ -17,6 +28,12 @@ func _ready() -> void:
 	window_mode_dropdown.add_item("Windowed")
 	window_mode_dropdown.add_item("Fullscreen")
 	
+	resolution_dropdown.add_item("1280 x 720")
+	resolution_dropdown.add_item("1600 x 900")
+	resolution_dropdown.add_item("1920 x 1080")
+	resolution_dropdown.add_item("2560 x 1440")
+	resolution_dropdown.add_item("3840 x 2160")
+	
 	# Wire up all button signals via code so you don't have to do it in the editor
 	$MainPanel/ResumeButton.pressed.connect(_on_resume_pressed)
 	$MainPanel/SettingsButton.pressed.connect(_on_settings_pressed)
@@ -25,6 +42,8 @@ func _ready() -> void:
 	
 	sensitivity_slider.value_changed.connect(_on_sensitivity_changed)
 	window_mode_dropdown.item_selected.connect(_on_window_mode_selected)
+	resolution_dropdown.item_selected.connect(_on_resolution_selected)
+	ui_scale_slider.value_changed.connect(_on_ui_scale_changed)
 
 func _input(event: InputEvent) -> void:
 	# 'ui_cancel' is mapped to Escape by default
@@ -77,3 +96,15 @@ func _on_window_mode_selected(index: int) -> void:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 	elif index == 1: # Fullscreen
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+
+func _on_resolution_selected(index: int) -> void:
+	var res = resolutions[index]
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	DisplayServer.window_set_size(res)
+	# Center the window on screen after resize
+	var screen_size = DisplayServer.screen_get_size()
+	DisplayServer.window_set_position((screen_size - res) / 2)
+
+func _on_ui_scale_changed(value: float) -> void:
+	if ui_layer:
+		ui_layer.scale = Vector2(value, value)
