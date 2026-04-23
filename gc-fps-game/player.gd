@@ -13,6 +13,8 @@ var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 @onready var accuracy_label = $"../UI/HUD/AccuracyLabel"
 @onready var misses_label = $"../UI/HUD/MissesLabel"
 @onready var fps_label = $"../UI/HUD/FPSLabel"
+@onready var reset_targets_btn = $"../ControlPanel/ResetTargetsButton"
+@onready var reset_accuracy_btn = $"../ControlPanel/ResetAccuracyButton"
 # @onready var raycaster = $CustomRaycaster # Uncomment this once your C++ node is compiled
 
 var total_shots: int = 0
@@ -66,6 +68,20 @@ func fire_weapon() -> void:
 	
 	var origin = camera.global_position
 	var direction = -camera.global_transform.basis.z 
+	
+	# Check reset targets button (no shot cost)
+	if reset_targets_btn:
+		var to_btn = reset_targets_btn.global_position - origin
+		if direction.angle_to(to_btn) < 0.2:
+			reset_targets_btn.activate()
+			return
+
+	# Check reset accuracy button (no shot cost)
+	if reset_accuracy_btn:
+		var to_btn = reset_accuracy_btn.global_position - origin
+		if direction.angle_to(to_btn) < 0.2:
+			reset_accuracy_btn.activate()
+			return
 	
 	var closest_distance = INF
 	var hit_target = null

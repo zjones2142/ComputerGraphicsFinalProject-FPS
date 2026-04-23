@@ -5,6 +5,8 @@
 [ext_resource type="Script" uid="uid://barhbxwb14d3p" path="res://pause_menu.gd" id="2_noarx"]
 [ext_resource type="Material" uid="uid://t7nhhrhwq31l" path="res://Materials/gun_material.tres" id="3_i5arm"]
 [ext_resource type="Material" uid="uid://qm5pucavpem" path="res://Materials/target_material.tres" id="4_wc5p8"]
+[ext_resource type="Script" uid="uid://ijs7pbgtqcue" path="res://reset_targets_button.gd" id="5_resettargets"]
+[ext_resource type="Script" uid="uid://bdhrhnwkdb4kb" path="res://reset_accuracy_button.gd" id="6_resetaccuracy"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_4xowi"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -14,32 +16,44 @@ ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
 sky_material = SubResource("ProceduralSkyMaterial_4xowi")
 
 [sub_resource type="Environment" id="Environment_noarx"]
-background_mode = 2
+background_mode = 1
+background_color = Color(0.05, 0.05, 0.05, 1)
 sky = SubResource("Sky_a202f")
+ambient_light_source = 2
+ambient_light_color = Color(0.4, 0.4, 0.45, 1)
+ambient_light_energy = 0.6
 tonemap_mode = 2
 glow_enabled = true
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4xowi"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_4xowi"]
+[sub_resource type="BoxMesh" id="BoxMesh_gun"]
 size = Vector3(0.1, 0.1, 0.5)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ceiling"]
+albedo_color = Color(0.78, 0.78, 0.78, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wall"]
+albedo_color = Color(0.52, 0.52, 0.56, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_targetwall"]
+albedo_color = Color(0.22, 0.18, 0.15, 1)
+
 [sub_resource type="SphereMesh" id="SphereMesh_a202f"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pedestal"]
+albedo_color = Color(0.18, 0.18, 0.2, 1)
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_button"]
+size = Vector3(1.6, 0.6, 0.15)
 
 [node name="3DRoot" type="Node3D" unique_id=1354301207]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=166516079]
 environment = SubResource("Environment_noarx")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1241505659]
-transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
-shadow_enabled = true
-
-[node name="Floor" type="CSGBox3D" parent="." unique_id=282246807]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5019839, 0)
-use_collision = true
-size = Vector3(50, 1, 50)
-material = ExtResource("1_jka67")
 
 [node name="Player" type="CharacterBody3D" parent="." unique_id=1651511319]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8117771, 0)
@@ -54,23 +68,151 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8674773, 0)
 
 [node name="Gun" type="MeshInstance3D" parent="Player/Camera3D" unique_id=1703807613]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.36446023, -0.17177403, -0.53212756)
-mesh = SubResource("BoxMesh_4xowi")
+mesh = SubResource("BoxMesh_gun")
 surface_material_override/0 = ExtResource("3_i5arm")
 
-[node name="Target1" type="MeshInstance3D" parent="." unique_id=436864458 groups=["Targets"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.079391, 1.4508967, -8.394179)
+[node name="Range" type="Node3D" parent="." unique_id=2000000001]
+
+[node name="Floor" type="CSGBox3D" parent="Range" unique_id=282246807]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -20)
+use_collision = true
+size = Vector3(40, 1, 50)
+material = ExtResource("1_jka67")
+
+[node name="Ceiling" type="CSGBox3D" parent="Range" unique_id=2000000002]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.5, -20)
+use_collision = true
+size = Vector3(40, 1, 50)
+material = SubResource("StandardMaterial3D_ceiling")
+
+[node name="WallLeft" type="CSGBox3D" parent="Range" unique_id=2000000003]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.5, 4.5, -20)
+use_collision = true
+size = Vector3(1, 10, 50)
+material = SubResource("StandardMaterial3D_wall")
+
+[node name="WallRight" type="CSGBox3D" parent="Range" unique_id=2000000004]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, 4.5, -20)
+use_collision = true
+size = Vector3(1, 10, 50)
+material = SubResource("StandardMaterial3D_wall")
+
+[node name="WallFront" type="CSGBox3D" parent="Range" unique_id=2000000005]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 5.5)
+use_collision = true
+size = Vector3(42, 10, 1)
+material = SubResource("StandardMaterial3D_wall")
+
+[node name="WallTarget" type="CSGBox3D" parent="Range" unique_id=2000000006]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -45.5)
+use_collision = true
+size = Vector3(42, 10, 1)
+material = SubResource("StandardMaterial3D_targetwall")
+
+[node name="Light1" type="OmniLight3D" parent="Range" unique_id=2000000007]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 8.5, -8)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 3.0
+shadow_enabled = true
+omni_range = 22.0
+
+[node name="Light2" type="OmniLight3D" parent="Range" unique_id=2000000008]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 8.5, -8)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 3.0
+shadow_enabled = true
+omni_range = 22.0
+
+[node name="Light3" type="OmniLight3D" parent="Range" unique_id=2000000009]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 8.5, -32)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 3.0
+shadow_enabled = true
+omni_range = 22.0
+
+[node name="Light4" type="OmniLight3D" parent="Range" unique_id=2000000010]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 8.5, -32)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 3.0
+shadow_enabled = true
+omni_range = 22.0
+
+[node name="Targets" type="Node3D" parent="." unique_id=2000000011]
+
+[node name="Target1" type="MeshInstance3D" parent="Targets" unique_id=436864458 groups=["Targets"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2, -43)
 mesh = SubResource("SphereMesh_a202f")
 surface_material_override/0 = ExtResource("4_wc5p8")
 
-[node name="Target2" type="MeshInstance3D" parent="." unique_id=1028605617 groups=["Targets"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9439962, 2.9017935, -10.266437)
+[node name="Target2" type="MeshInstance3D" parent="Targets" unique_id=1028605617 groups=["Targets"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, -43)
 mesh = SubResource("SphereMesh_a202f")
 surface_material_override/0 = ExtResource("4_wc5p8")
 
-[node name="Target3" type="MeshInstance3D" parent="." unique_id=1908591020 groups=["Targets"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5004005, 4.35269, -13.090519)
+[node name="Target3" type="MeshInstance3D" parent="Targets" unique_id=1908591020 groups=["Targets"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, -43)
 mesh = SubResource("SphereMesh_a202f")
 surface_material_override/0 = ExtResource("4_wc5p8")
+
+[node name="Target4" type="MeshInstance3D" parent="Targets" unique_id=2000000012 groups=["Targets"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2, -43)
+mesh = SubResource("SphereMesh_a202f")
+surface_material_override/0 = ExtResource("4_wc5p8")
+
+[node name="Target5" type="MeshInstance3D" parent="Targets" unique_id=2000000013 groups=["Targets"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 5, -43)
+mesh = SubResource("SphereMesh_a202f")
+surface_material_override/0 = ExtResource("4_wc5p8")
+
+[node name="Target6" type="MeshInstance3D" parent="Targets" unique_id=2000000014 groups=["Targets"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -43)
+mesh = SubResource("SphereMesh_a202f")
+surface_material_override/0 = ExtResource("4_wc5p8")
+
+[node name="Target7" type="MeshInstance3D" parent="Targets" unique_id=2000000015 groups=["Targets"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 5, -43)
+mesh = SubResource("SphereMesh_a202f")
+surface_material_override/0 = ExtResource("4_wc5p8")
+
+[node name="Target8" type="MeshInstance3D" parent="Targets" unique_id=2000000016 groups=["Targets"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 7.5, -43)
+mesh = SubResource("SphereMesh_a202f")
+surface_material_override/0 = ExtResource("4_wc5p8")
+
+[node name="Target9" type="MeshInstance3D" parent="Targets" unique_id=2000000017 groups=["Targets"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 7.5, -43)
+mesh = SubResource("SphereMesh_a202f")
+surface_material_override/0 = ExtResource("4_wc5p8")
+
+[node name="ControlPanel" type="Node3D" parent="." unique_id=-294967295]
+
+[node name="Pedestal" type="CSGBox3D" parent="ControlPanel" unique_id=-294967294]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -4)
+use_collision = true
+size = Vector3(4.2, 1, 1.2)
+material = SubResource("StandardMaterial3D_pedestal")
+
+[node name="ResetTargetsButton" type="MeshInstance3D" parent="ControlPanel" unique_id=-294967293]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1.3, -3.55)
+mesh = SubResource("BoxMesh_button")
+script = ExtResource("5_resettargets")
+
+[node name="Label3D" type="Label3D" parent="ControlPanel/ResetTargetsButton" unique_id=-294967292]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -0.08474398)
+text = "RESET
+TARGETS"
+font_size = 48
+
+[node name="ResetAccuracyButton" type="MeshInstance3D" parent="ControlPanel" unique_id=-294967291]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1.3, -3.55)
+mesh = SubResource("BoxMesh_button")
+script = ExtResource("6_resetaccuracy")
+
+[node name="Label3D" type="Label3D" parent="ControlPanel/ResetAccuracyButton" unique_id=-294967290]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -0.086)
+text = "RESET
+ACCURACY"
+font_size = 48
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1392470494]
 
@@ -177,9 +319,9 @@ text = "UI Scale:"
 
 [node name="UIScaleSlider" type="SpinBox" parent="UI/PauseMenu/SettingsPanel/TabContainer/Video" unique_id=708884265]
 layout_mode = 2
-min_value = 1.0
-max_value = 5.0
-step = 0.1
+min_value = 0.5
+max_value = 2.0
+step = 0.05
 value = 1.0
 suffix = "x"
 
