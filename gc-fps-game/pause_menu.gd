@@ -9,6 +9,8 @@ extends Control
 @onready var window_mode_dropdown = $SettingsPanel/TabContainer/Video/WindowModeDropdown
 @onready var resolution_dropdown = $SettingsPanel/TabContainer/Video/ResolutionDropdown
 @onready var ui_scale_slider: SpinBox = $SettingsPanel/TabContainer/Video/UIScaleSlider
+@onready var crosshair_size_slider: SpinBox = $SettingsPanel/TabContainer/Crosshair/CrosshairSizeSlider
+@onready var crosshair_rect: ColorRect = $"../CrosshairLayer/CrosshairContainer/ColorRect"
 @onready var tab_container = $SettingsPanel/TabContainer  # for tab button font scaling
 @onready var all_ui_nodes: Array = []
 @onready var all_spinboxes: Array = []
@@ -62,6 +64,7 @@ func _ready() -> void:
 	window_mode_dropdown.item_selected.connect(_on_window_mode_selected)
 	resolution_dropdown.item_selected.connect(_on_resolution_selected)
 	ui_scale_slider.value_changed.connect(_on_ui_scale_changed)
+	crosshair_size_slider.value_changed.connect(_on_crosshair_size_changed)
 
 # Recursively collect Labels, Buttons, OptionButtons, and SpinBoxes
 func _collect_text_nodes(node: Node, result: Array) -> void:
@@ -155,3 +158,12 @@ func _on_ui_scale_changed(value: float) -> void:
 	custom_minimum_size = BASE_MIN_SIZE * value
 	size = BASE_MIN_SIZE * value
 	set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	
+func _on_crosshair_size_changed(value: float) -> void:
+	if crosshair_rect:
+		# Directly set the size — works because ColorRect is not inside a container
+		var new_size = 4.0 * value
+		crosshair_rect.size = Vector2(new_size, new_size)
+		# Reposition it so it stays centered on screen
+		var screen = get_viewport().get_visible_rect().size
+		crosshair_rect.position = (screen / 2.0) - (Vector2(new_size, new_size) / 2.0)

@@ -13,7 +13,7 @@ sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
 ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
 
 [sub_resource type="Sky" id="Sky_a202f"]
-sky_material = SubResource("ProceduralSkyMaterial_4xowi")
+sky_material = SubResource("Sky_a202f")
 
 [sub_resource type="Environment" id="Environment_noarx"]
 background_mode = 1
@@ -339,6 +339,23 @@ layout_mode = 2
 max_value = 0.01
 step = 0.0
 
+[node name="Crosshair" type="VBoxContainer" parent="UI/PauseMenu/SettingsPanel/TabContainer" unique_id=5000000001]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="CrosshairSizeLabel" type="Label" parent="UI/PauseMenu/SettingsPanel/TabContainer/Crosshair" unique_id=5000000002]
+layout_mode = 2
+text = "Crosshair Size:"
+
+[node name="CrosshairSizeSlider" type="SpinBox" parent="UI/PauseMenu/SettingsPanel/TabContainer/Crosshair" unique_id=5000000003]
+layout_mode = 2
+min_value = 0.5
+max_value = 5.0
+step = 0.25
+value = 1.0
+suffix = "x"
+
 [node name="BackButton" type="Button" parent="UI/PauseMenu/SettingsPanel" unique_id=1450557331]
 layout_mode = 1
 anchors_preset = 2
@@ -352,15 +369,19 @@ text = "Back"
 [node name="CrosshairLayer" type="CanvasLayer" parent="." unique_id=1111111111]
 layer = 2
 
-[node name="CrosshairContainer" type="CenterContainer" parent="CrosshairLayer" unique_id=1793271217]
+[node name="CrosshairContainer" type="Control" parent="CrosshairLayer" unique_id=1793271217]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 mouse_filter = 2
 
 [node name="ColorRect" type="ColorRect" parent="CrosshairLayer/CrosshairContainer" unique_id=574838950]
-custom_minimum_size = Vector2(4, 4)
-layout_mode = 2
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 color = Color(12.03035, 0.00059141894, 6.6810884, 1)
