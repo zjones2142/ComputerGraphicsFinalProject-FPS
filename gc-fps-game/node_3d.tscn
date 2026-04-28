@@ -8,12 +8,7 @@
 [ext_resource type="Script" uid="uid://ijs7pbgtqcue" path="res://reset_targets_button.gd" id="5_resettargets"]
 [ext_resource type="Script" uid="uid://bdhrhnwkdb4kb" path="res://reset_accuracy_button.gd" id="6_resetaccuracy"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_4xowi"]
-sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-
 [sub_resource type="Sky" id="Sky_a202f"]
-sky_material = SubResource("Sky_a202f")
 
 [sub_resource type="Environment" id="Environment_noarx"]
 background_mode = 1
@@ -70,6 +65,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8674773, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.36446023, -0.17177403, -0.53212756)
 mesh = SubResource("BoxMesh_gun")
 surface_material_override/0 = ExtResource("3_i5arm")
+
+[node name="CustomRaycaster" type="CustomRaycaster" parent="Player" unique_id=119109902]
 
 [node name="Range" type="Node3D" parent="." unique_id=2000000001]
 
@@ -339,16 +336,16 @@ layout_mode = 2
 max_value = 0.01
 step = 0.0
 
-[node name="Crosshair" type="VBoxContainer" parent="UI/PauseMenu/SettingsPanel/TabContainer" unique_id=5000000001]
+[node name="Crosshair" type="VBoxContainer" parent="UI/PauseMenu/SettingsPanel/TabContainer" unique_id=705032705]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
-[node name="CrosshairSizeLabel" type="Label" parent="UI/PauseMenu/SettingsPanel/TabContainer/Crosshair" unique_id=5000000002]
+[node name="CrosshairSizeLabel" type="Label" parent="UI/PauseMenu/SettingsPanel/TabContainer/Crosshair" unique_id=705032706]
 layout_mode = 2
 text = "Crosshair Size:"
 
-[node name="CrosshairSizeSlider" type="SpinBox" parent="UI/PauseMenu/SettingsPanel/TabContainer/Crosshair" unique_id=5000000003]
+[node name="CrosshairSizeSlider" type="SpinBox" parent="UI/PauseMenu/SettingsPanel/TabContainer/Crosshair" unique_id=705032707]
 layout_mode = 2
 min_value = 0.5
 max_value = 5.0
@@ -370,18 +367,20 @@ text = "Back"
 layer = 2
 
 [node name="CrosshairContainer" type="Control" parent="CrosshairLayer" unique_id=1793271217]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
 [node name="ColorRect" type="ColorRect" parent="CrosshairLayer/CrosshairContainer" unique_id=574838950]
-offset_left = -2.0
-offset_top = -2.0
-offset_right = 2.0
-offset_bottom = 2.0
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
 color = Color(12.03035, 0.00059141894, 6.6810884, 1)

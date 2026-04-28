@@ -7,7 +7,6 @@ const JUMP_VELOCITY = 4.5
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 @export var mouse_sensitivity: float = 0.002
-@export var target_radius: float = 1.0
 
 @onready var camera = $Camera3D
 @onready var accuracy_label = $"../UI/HUD/AccuracyLabel"
@@ -15,6 +14,7 @@ var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 @onready var fps_label = $"../UI/HUD/FPSLabel"
 @onready var reset_targets_btn = $"../ControlPanel/ResetTargetsButton"
 @onready var reset_accuracy_btn = $"../ControlPanel/ResetAccuracyButton"
+@onready var raycaster = $CustomRaycaster
 # @onready var raycaster = $CustomRaycaster # Uncomment this once your C++ node is compiled
 
 var total_shots: int = 0
@@ -91,19 +91,12 @@ func fire_weapon() -> void:
 	for target in targets:
 		var sphere_center = target.global_position
 		
-		# NOTE: Replace the block below with your C++ function call once ready
-		# var hit_dist = raycaster.check_sphere_hit(origin, direction, sphere_center, target_radius)
+		# Assuming visual target is a standard Godot Sphere (default radius 0.5)
+		# We multiply 0.5 by the target's X scale so it matches perfectly even if you shrink/grow the target!
+		var exact_visual_radius = 0.5 * target.scale.x 
 		
-		# --- TEMPORARY DISTANCE CHECK FOR PROTOTYPING ---
-		# This just checks if you are aiming *generally* at the target to test the loop
-		var vector_to_target = sphere_center - origin
-		var distance_to_target = vector_to_target.length()
-		var angle = direction.angle_to(vector_to_target)
-		
-		var hit_dist = -1.0
-		if angle < 0.1: # Very rough "cone" intersection
-			hit_dist = distance_to_target
-		# ------------------------------------------------
+		# Feed the perfectly matched radius to our C++ math
+		var hit_dist = raycaster.check_sphere_hit(origin, direction, sphere_center, exact_visual_radius)
 			
 		if hit_dist > 0.0 and hit_dist < closest_distance:
 			closest_distance = hit_dist
