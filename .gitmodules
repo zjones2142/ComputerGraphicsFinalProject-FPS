@@ -1,6 +1,3 @@
-[submodule "gc-fps-game/godot-cpp"]
-	path = gc-fps-game/godot-cpp
-	url = https://github.com/godotengine/godot-cpp
 [submodule "godot-cpp"]
 	path = godot-cpp
 	url = https://github.com/godotengine/godot-cpp
