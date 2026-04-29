@@ -96,6 +96,12 @@ func _ready() -> void:
 	
 	crosshair_container.queue_redraw()
 	
+	# Launch Defaults 
+	# Force Fullscreen on Launch and disable resolution dropdown
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+	window_mode_dropdown.select(1)
+	resolution_dropdown.disabled = true
+	
 # Recursively collect Labels, Buttons, OptionButtons, and SpinBoxes
 func _collect_text_nodes(node: Node, result: Array) -> void:
 	for child in node.get_children():
@@ -156,16 +162,26 @@ func _on_sensitivity_changed(value: float) -> void:
 func _on_window_mode_selected(index: int) -> void:
 	if index == 0: # Windowed
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		resolution_dropdown.disabled = false
+		
+		# Immediately apply the chosen windowed resolution
+		var current_res_index = resolution_dropdown.selected
+		if current_res_index != -1:
+			_on_resolution_selected(current_res_index)
+			
 	elif index == 1: # Fullscreen
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+		resolution_dropdown.disabled = true
 
 func _on_resolution_selected(index: int) -> void:
-	var res = resolutions[index]
-	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-	DisplayServer.window_set_size(res)
-	# Center the window on screen after resize
-	var screen_size = DisplayServer.screen_get_size()
-	DisplayServer.window_set_position((screen_size - res) / 2)
+	# Only change resolution if we are not in fullscreen mode
+	if window_mode_dropdown.selected == 0:
+		var res = resolutions[index]
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_size(res)
+		# Center the window on screen after resize
+		var screen_size = DisplayServer.screen_get_size()
+		DisplayServer.window_set_position((screen_size - res) / 2)
 
 func _on_ui_scale_changed(value: float) -> void:
 	var new_size = int(BASE_FONT_SIZE * value)

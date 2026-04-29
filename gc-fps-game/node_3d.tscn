@@ -305,7 +305,7 @@ layout_mode = 2
 
 [node name="ResolutionLabel" type="Label" parent="UI/PauseMenu/SettingsPanel/TabContainer/Video" unique_id=1659662762]
 layout_mode = 2
-text = "Resolution:"
+text = "Windowed Resolution:"
 
 [node name="ResolutionDropdown" type="OptionButton" parent="UI/PauseMenu/SettingsPanel/TabContainer/Video" unique_id=1750104219]
 layout_mode = 2
