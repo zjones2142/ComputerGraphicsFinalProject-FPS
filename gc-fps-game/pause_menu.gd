@@ -80,15 +80,23 @@ func _ready() -> void:
 	crosshair_color = crosshair_color_picker.color
 	crosshair_size = crosshair_size_slider.value
 	
+	# This will ensure Dot is selected and applied by default in the crosshair tab
+	if crosshair_type_dropdown.selected == -1:
+		crosshair_type_dropdown.select(0)#0 is dot duh lol
+	crosshair_type = crosshair_type_dropdown.selected
+	
 	crosshair_size_slider.value_changed.connect(_on_crosshair_size_changed)
 	crosshair_color_picker.color_changed.connect(_on_crosshair_color_changed)
 	crosshair_type_dropdown.item_selected.connect(_on_crosshair_type_selected)
 	
 	# Set up dynamic drawing and disable the old static color rect
-	crosshair_rect.hide()
+	if crosshair_rect:
+		crosshair_rect.hide()
 	crosshair_container.draw.connect(_draw_crosshair)
 	crosshair_container.item_rect_changed.connect(func(): crosshair_container.queue_redraw()) # Redraw on window resize
-
+	
+	crosshair_container.queue_redraw()
+	
 # Recursively collect Labels, Buttons, OptionButtons, and SpinBoxes
 func _collect_text_nodes(node: Node, result: Array) -> void:
 	for child in node.get_children():
@@ -111,6 +119,7 @@ func toggle_pause() -> void:
 		get_tree().paused = false
 		hide()
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		crosshair_container.queue_redraw() # Snap crosshair back to center
 	else:
 		# Pause
 		get_tree().paused = true
@@ -118,6 +127,7 @@ func toggle_pause() -> void:
 		main_panel.show()
 		settings_panel.hide()
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		crosshair_container.queue_redraw() # Shift crosshair to the right for the crosshair viewer
 
 # --- Main Menu Buttons ---
 
@@ -181,16 +191,12 @@ func _on_ui_scale_changed(value: float) -> void:
 	custom_minimum_size = BASE_MIN_SIZE * value
 	size = BASE_MIN_SIZE * value
 	set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	# redraw crosshair so its offset gap scales dynamically too
+	crosshair_container.queue_redraw()
 	
 # --- Crosshair Drawing & Updates ---
 	
 func _on_crosshair_size_changed(value: float) -> void:
-	if crosshair_rect:
-		var half = 2.0 * value
-		crosshair_rect.offset_left = -half
-		crosshair_rect.offset_top = -half
-		crosshair_rect.offset_right = half
-		crosshair_rect.offset_bottom = half
 	crosshair_size = value
 	crosshair_container.queue_redraw()
 
@@ -204,6 +210,13 @@ func _on_crosshair_type_selected(index: int) -> void:
 
 func _draw_crosshair() -> void:
 	var center = crosshair_container.size / 2.0
+	
+	# Shift crosshair to the right when the pause menu is open to act as a viewer
+	if get_tree().paused and visible:
+		var current_scale = ui_scale_slider.value if ui_scale_slider else 1.0
+		# Shift by half the width of the pause menu plus a 120-pixel gap
+		center.x += (BASE_MIN_SIZE.x / 2.0 + 120) * current_scale
+		
 	var base_size = 4.0 * crosshair_size
 	
 	if crosshair_type == 0: # Dot
