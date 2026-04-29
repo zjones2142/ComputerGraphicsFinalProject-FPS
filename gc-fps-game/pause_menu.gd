@@ -10,7 +10,7 @@ extends Control
 @onready var resolution_dropdown = $SettingsPanel/TabContainer/Video/ResolutionDropdown
 @onready var ui_scale_slider: SpinBox = $SettingsPanel/TabContainer/Video/UIScaleSlider
 @onready var crosshair_size_slider: SpinBox = $SettingsPanel/TabContainer/Crosshair/CrosshairSizeSlider
-@onready var crosshair_rect: ColorRect = $"../CrosshairLayer/CrosshairContainer/ColorRect"
+@onready var crosshair_rect: ColorRect = $"../../CrosshairLayer/CrosshairContainer/ColorRect"
 @onready var tab_container = $SettingsPanel/TabContainer  # for tab button font scaling
 @onready var all_ui_nodes: Array = []
 @onready var all_spinboxes: Array = []
@@ -161,9 +161,8 @@ func _on_ui_scale_changed(value: float) -> void:
 	
 func _on_crosshair_size_changed(value: float) -> void:
 	if crosshair_rect:
-		# Directly set the size — works because ColorRect is not inside a container
-		var new_size = 4.0 * value
-		crosshair_rect.size = Vector2(new_size, new_size)
-		# Reposition it so it stays centered on screen
-		var screen = get_viewport().get_visible_rect().size
-		crosshair_rect.position = (screen / 2.0) - (Vector2(new_size, new_size) / 2.0)
+		var half = 2.0 * value
+		crosshair_rect.offset_left = -half
+		crosshair_rect.offset_top = -half
+		crosshair_rect.offset_right = half
+		crosshair_rect.offset_bottom = half
