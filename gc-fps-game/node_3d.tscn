@@ -353,6 +353,29 @@ step = 0.25
 value = 1.0
 suffix = "x"
 
+[node name="CrosshairColorLabel" type="Label" parent="UI/PauseMenu/SettingsPanel/TabContainer/Crosshair" unique_id=705032708]
+layout_mode = 2
+text = "Crosshair Color:"
+
+[node name="CrosshairColorPicker" type="ColorPickerButton" parent="UI/PauseMenu/SettingsPanel/TabContainer/Crosshair" unique_id=705032709]
+layout_mode = 2
+text = "Color"
+color = Color(1, 1, 1, 1)
+
+[node name="CrosshairTypeLabel" type="Label" parent="UI/PauseMenu/SettingsPanel/TabContainer/Crosshair" unique_id=705032710]
+layout_mode = 2
+text = "Crosshair Type:"
+
+[node name="CrosshairTypeDropdown" type="OptionButton" parent="UI/PauseMenu/SettingsPanel/TabContainer/Crosshair" unique_id=705032711]
+layout_mode = 2
+item_count = 3
+popup/item_0/text = "Dot"
+popup/item_0/id = 0
+popup/item_1/text = "Cross"
+popup/item_1/id = 1
+popup/item_2/text = "Circle"
+popup/item_2/id = 2
+
 [node name="BackButton" type="Button" parent="UI/PauseMenu/SettingsPanel" unique_id=1450557331]
 layout_mode = 1
 anchors_preset = 2
@@ -371,6 +394,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
 [node name="ColorRect" type="ColorRect" parent="CrosshairLayer/CrosshairContainer" unique_id=574838950]

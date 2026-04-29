@@ -9,11 +9,16 @@ extends Control
 @onready var window_mode_dropdown = $SettingsPanel/TabContainer/Video/WindowModeDropdown
 @onready var resolution_dropdown = $SettingsPanel/TabContainer/Video/ResolutionDropdown
 @onready var ui_scale_slider: SpinBox = $SettingsPanel/TabContainer/Video/UIScaleSlider
-@onready var crosshair_size_slider: SpinBox = $SettingsPanel/TabContainer/Crosshair/CrosshairSizeSlider
-@onready var crosshair_rect: ColorRect = $"../../CrosshairLayer/CrosshairContainer/ColorRect"
 @onready var tab_container = $SettingsPanel/TabContainer  # for tab button font scaling
 @onready var all_ui_nodes: Array = []
 @onready var all_spinboxes: Array = []
+
+# Crosshair Nodes
+@onready var crosshair_size_slider: SpinBox = $SettingsPanel/TabContainer/Crosshair/CrosshairSizeSlider
+@onready var crosshair_color_picker: ColorPickerButton = $SettingsPanel/TabContainer/Crosshair/CrosshairColorPicker
+@onready var crosshair_type_dropdown: OptionButton = $SettingsPanel/TabContainer/Crosshair/CrosshairTypeDropdown
+@onready var crosshair_container: Control = $"../../CrosshairLayer/CrosshairContainer"
+@onready var crosshair_rect: ColorRect = $"../../CrosshairLayer/CrosshairContainer/ColorRect"
 
 const BASE_FONT_SIZE: int = 20
 const BASE_MIN_SIZE: Vector2 = Vector2(450, 300)
@@ -25,6 +30,11 @@ var resolutions = [
 	Vector2i(2560, 1440),
 	Vector2i(3840, 2160),
 ]
+
+# Crosshair State Variables
+var crosshair_color: Color = Color.WHITE
+var crosshair_type: int = 0
+var crosshair_size: float = 1.0
 
 func _ready() -> void:
 	# Hide the menu when the game starts
@@ -65,6 +75,19 @@ func _ready() -> void:
 	resolution_dropdown.item_selected.connect(_on_resolution_selected)
 	ui_scale_slider.value_changed.connect(_on_ui_scale_changed)
 	crosshair_size_slider.value_changed.connect(_on_crosshair_size_changed)
+	
+	# Initialize Crosshair Settings
+	crosshair_color = crosshair_color_picker.color
+	crosshair_size = crosshair_size_slider.value
+	
+	crosshair_size_slider.value_changed.connect(_on_crosshair_size_changed)
+	crosshair_color_picker.color_changed.connect(_on_crosshair_color_changed)
+	crosshair_type_dropdown.item_selected.connect(_on_crosshair_type_selected)
+	
+	# Set up dynamic drawing and disable the old static color rect
+	crosshair_rect.hide()
+	crosshair_container.draw.connect(_draw_crosshair)
+	crosshair_container.item_rect_changed.connect(func(): crosshair_container.queue_redraw()) # Redraw on window resize
 
 # Recursively collect Labels, Buttons, OptionButtons, and SpinBoxes
 func _collect_text_nodes(node: Node, result: Array) -> void:
@@ -159,6 +182,8 @@ func _on_ui_scale_changed(value: float) -> void:
 	size = BASE_MIN_SIZE * value
 	set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	
+# --- Crosshair Drawing & Updates ---
+	
 func _on_crosshair_size_changed(value: float) -> void:
 	if crosshair_rect:
 		var half = 2.0 * value
@@ -166,3 +191,36 @@ func _on_crosshair_size_changed(value: float) -> void:
 		crosshair_rect.offset_top = -half
 		crosshair_rect.offset_right = half
 		crosshair_rect.offset_bottom = half
+	crosshair_size = value
+	crosshair_container.queue_redraw()
+
+func _on_crosshair_color_changed(color: Color) -> void:
+	crosshair_color = color
+	crosshair_container.queue_redraw()
+
+func _on_crosshair_type_selected(index: int) -> void:
+	crosshair_type = index
+	crosshair_container.queue_redraw()
+
+func _draw_crosshair() -> void:
+	var center = crosshair_container.size / 2.0
+	var base_size = 4.0 * crosshair_size
+	
+	if crosshair_type == 0: # Dot
+		var rect = Rect2(center - Vector2(base_size/2, base_size/2), Vector2(base_size, base_size))
+		crosshair_container.draw_rect(rect, crosshair_color)
+		
+	elif crosshair_type == 1: # Cross
+		var length = base_size * 4.0
+		var thickness = base_size * 0.75
+		# Horizontal line
+		var h_rect = Rect2(center - Vector2(length/2, thickness/2), Vector2(length, thickness))
+		crosshair_container.draw_rect(h_rect, crosshair_color)
+		# Vertical line
+		var v_rect = Rect2(center - Vector2(thickness/2, length/2), Vector2(thickness, length))
+		crosshair_container.draw_rect(v_rect, crosshair_color)
+		
+	elif crosshair_type == 2: # Circle
+		var radius = base_size * 2.0
+		var thickness = base_size * 0.75
+		crosshair_container.draw_arc(center, radius, 0, TAU, 32, crosshair_color, thickness, true)
