@@ -74,7 +74,6 @@ func _ready() -> void:
 	window_mode_dropdown.item_selected.connect(_on_window_mode_selected)
 	resolution_dropdown.item_selected.connect(_on_resolution_selected)
 	ui_scale_slider.value_changed.connect(_on_ui_scale_changed)
-	crosshair_size_slider.value_changed.connect(_on_crosshair_size_changed)
 	
 	# Initialize Crosshair Settings
 	crosshair_color = crosshair_color_picker.color
