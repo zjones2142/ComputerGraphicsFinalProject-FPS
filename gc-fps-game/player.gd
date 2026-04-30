@@ -67,8 +67,6 @@ func _process(_delta: float) -> void:
 	fps_label.text = "FPS: %d" % Engine.get_frames_per_second()
 
 func fire_weapon() -> void:
-	total_shots += 1
-	
 	var origin = camera.global_position
 	var direction = -camera.global_transform.basis.z 
 	
@@ -81,6 +79,8 @@ func fire_weapon() -> void:
 	if is_button_hit(reset_accuracy_btn, origin, direction):
 		reset_accuracy_btn.activate()
 		return
+		
+	total_shots += 1
 	
 	var closest_distance = INF
 	var hit_target = null
