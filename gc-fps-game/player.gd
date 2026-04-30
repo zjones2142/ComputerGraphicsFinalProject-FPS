@@ -113,9 +113,6 @@ func fire_weapon() -> void:
 		
 	update_accuracy_ui()
 	
-	# Draw the laser starting from the Gun mesh
-	var gun_node = $Camera3D/Gun
-	
 	draw_laser(origin, end_point)
 
 func update_accuracy_ui() -> void:

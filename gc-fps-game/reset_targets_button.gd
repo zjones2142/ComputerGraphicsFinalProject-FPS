@@ -50,9 +50,10 @@ func activate() -> void:
 		t.name = "Target%d" % (i + 1)
 		t.mesh = sphere_mesh
 		t.set_surface_override_material(0, mat)
-		t.global_position = TARGET_POSITIONS[i]
 		t.add_to_group("Targets")
+		# FIXED: Must add child to the tree BEFORE setting a global position
 		targets_parent.add_child(t)
+		t.global_position = TARGET_POSITIONS[i]
 
 	await get_tree().create_timer(0.5).timeout
 	set_surface_override_material(0, green_mat)
