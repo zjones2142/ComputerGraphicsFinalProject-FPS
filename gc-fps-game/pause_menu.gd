@@ -24,6 +24,8 @@ extends Control
 const BASE_FONT_SIZE: int = 20
 const BASE_MIN_SIZE: Vector2 = Vector2(450, 300)
 
+const SAVE_PATH: String = "user://settings.cfg"# for saving settings
+
 var resolutions = [
 	Vector2i(1280, 720),
 	Vector2i(1600, 900),
@@ -104,6 +106,9 @@ func _ready() -> void:
 	window_mode_dropdown.select(1)
 	resolution_dropdown.disabled = true
 	
+	# Load all settings from file (or apply launch defaults if none exist)
+	load_settings()
+	
 # Recursively collect Labels, Buttons, OptionButtons, and SpinBoxes
 func _collect_text_nodes(node: Node, result: Array) -> void:
 	for child in node.get_children():
@@ -123,6 +128,7 @@ func toggle_pause() -> void:
 	
 	if is_paused:
 		# Unpause
+		save_settings() # Save upon exiting the menu via Escape key
 		get_tree().paused = false
 		hide()
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -136,6 +142,85 @@ func toggle_pause() -> void:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		crosshair_container.queue_redraw() # Shift crosshair to the right for the crosshair viewer
 
+# --- Save/Load System ---
+
+func save_settings() -> void:
+	var config = ConfigFile.new()
+	
+	# Video Settings
+	config.set_value("Video", "window_mode", window_mode_dropdown.selected)
+	config.set_value("Video", "resolution", resolution_dropdown.selected)
+	config.set_value("Video", "ui_scale", ui_scale_slider.value)
+	
+	# Player Settings
+	if player:
+		config.set_value("Player", "sensitivity", player.mouse_sensitivity)
+		if "show_raycast_laser" in player:
+			config.set_value("Player", "show_raycast_laser", player.show_raycast_laser)
+			
+	# Crosshair Settings
+	config.set_value("Crosshair", "size", crosshair_size)
+	config.set_value("Crosshair", "color", crosshair_color)
+	config.set_value("Crosshair", "type", crosshair_type)
+	
+	# Save to local app data folder
+	config.save(SAVE_PATH)
+
+func load_settings() -> void:
+	var config = ConfigFile.new()
+	var err = config.load(SAVE_PATH)
+	
+	if err != OK:
+		# No save file found. Apply launch defaults and generate a fresh save file
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+		window_mode_dropdown.select(1)
+		resolution_dropdown.disabled = true
+		
+		# Ensure crosshair has a default Type
+		if crosshair_type_dropdown.selected == -1:
+			crosshair_type_dropdown.select(0)
+		crosshair_type = crosshair_type_dropdown.selected
+		
+		save_settings()
+		return
+		
+	# Load Video Settings
+	var w_mode = config.get_value("Video", "window_mode", 1)
+	window_mode_dropdown.select(w_mode)
+	_on_window_mode_selected(w_mode) # Triggers the logic for resizing
+	
+	var res = config.get_value("Video", "resolution", 2)
+	resolution_dropdown.select(res)
+	if w_mode == 0:
+		_on_resolution_selected(res)
+		
+	var ui_scale = config.get_value("Video", "ui_scale", 1.0)
+	ui_scale_slider.value = ui_scale
+	_on_ui_scale_changed(ui_scale) # Force update labels
+	
+	# Load Player Settings
+	if player:
+		var sens = config.get_value("Player", "sensitivity", 0.002)
+		player.mouse_sensitivity = sens
+		sensitivity_slider.value = sens
+		
+		if "show_raycast_laser" in player:
+			var show_laser = config.get_value("Player", "show_raycast_laser", false)
+			player.show_raycast_laser = show_laser
+			raycast_demo_checkbox.button_pressed = show_laser
+			
+	# Load Crosshair Settings
+	crosshair_size = config.get_value("Crosshair", "size", 1.0)
+	crosshair_size_slider.value = crosshair_size
+	
+	crosshair_color = config.get_value("Crosshair", "color", Color.WHITE)
+	crosshair_color_picker.color = crosshair_color
+	
+	crosshair_type = config.get_value("Crosshair", "type", 0)
+	crosshair_type_dropdown.select(crosshair_type)
+	
+	crosshair_container.queue_redraw()
+	
 # --- Main Menu Buttons ---
 
 func _on_resume_pressed() -> void:
@@ -144,16 +229,20 @@ func _on_resume_pressed() -> void:
 func _on_settings_pressed() -> void:
 	main_panel.hide()
 	settings_panel.show()
-	# Sync the slider to the player's current sensitivity when opening the menu
+	# Sync UI to the player's current settings when opening the menu
 	if player:
 		sensitivity_slider.value = player.mouse_sensitivity
-
+		if "show_raycast_laser" in player:
+			raycast_demo_checkbox.button_pressed = player.show_raycast_laser
+			
 func _on_exit_pressed() -> void:
+	save_settings() # Save as game closes
 	get_tree().quit()
 
 # --- Settings Menu ---
 
 func _on_back_pressed() -> void:
+	save_settings() # Save upon returning to the main menu
 	settings_panel.hide()
 	main_panel.show()
 
