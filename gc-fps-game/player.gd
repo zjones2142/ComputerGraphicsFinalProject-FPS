@@ -72,19 +72,15 @@ func fire_weapon() -> void:
 	var origin = camera.global_position
 	var direction = -camera.global_transform.basis.z 
 	
-	# Check reset targets button (no shot cost)
-	if reset_targets_btn:
-		var to_btn = reset_targets_btn.global_position - origin
-		if direction.angle_to(to_btn) < 0.2:
-			reset_targets_btn.activate()
-			return
+	# Check reset targets button (no shot cost) with precise bounding box intersection
+	if is_button_hit(reset_targets_btn, origin, direction):
+		reset_targets_btn.activate()
+		return
 
-	# Check reset accuracy button (no shot cost)
-	if reset_accuracy_btn:
-		var to_btn = reset_accuracy_btn.global_position - origin
-		if direction.angle_to(to_btn) < 0.2:
-			reset_accuracy_btn.activate()
-			return
+	# Check reset accuracy button (no shot cost) with precise bounding box intersection
+	if is_button_hit(reset_accuracy_btn, origin, direction):
+		reset_accuracy_btn.activate()
+		return
 	
 	var closest_distance = INF
 	var hit_target = null
@@ -164,3 +160,18 @@ func draw_laser(start_pos: Vector3, end_pos: Vector3) -> void:
 	mesh.surface_add_vertex(start_pos)
 	mesh.surface_add_vertex(end_pos)
 	mesh.surface_end()
+
+# Precise Math Box Hit Detection Function
+func is_button_hit(button: MeshInstance3D, origin: Vector3, direction: Vector3) -> bool:
+	if not button or not button.mesh:
+		return false
+		
+	# Convert the global raycast into the button's "Local Space" coordinates
+	var local_origin = button.to_local(origin)
+	var local_dir = (button.global_transform.basis.inverse() * direction).normalized()
+	
+	# Grab the exact mathematical bounding box (AABB) of the button's 3D mesh
+	var aabb = button.mesh.get_aabb()
+	
+	# intersects_ray() returns the Vector3 hit position if true, or "null" if it missed
+	return aabb.intersects_ray(local_origin, local_dir) != null
