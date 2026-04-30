@@ -119,8 +119,8 @@ func fire_weapon() -> void:
 	
 	# Draw the laser starting from the Gun mesh
 	var gun_node = $Camera3D/Gun
-	var start_point = gun_node.global_position if gun_node else origin
-	draw_laser(start_point, end_point)
+	
+	draw_laser(origin, end_point)
 
 func update_accuracy_ui() -> void:
 	var misses = total_shots - total_hits
