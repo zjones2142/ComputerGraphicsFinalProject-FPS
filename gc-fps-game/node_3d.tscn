@@ -336,6 +336,10 @@ layout_mode = 2
 max_value = 0.01
 step = 0.0
 
+[node name="RaycastDemoCheckBox" type="CheckBox" parent="UI/PauseMenu/SettingsPanel/TabContainer/PlayerOptions" unique_id=705032712]
+layout_mode = 2
+text = "Show Raycast Laser"
+
 [node name="Crosshair" type="VBoxContainer" parent="UI/PauseMenu/SettingsPanel/TabContainer" unique_id=705032705]
 visible = false
 layout_mode = 2

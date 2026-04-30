@@ -6,6 +6,7 @@ extends Control
 @onready var main_panel = $MainPanel
 @onready var settings_panel = $SettingsPanel
 @onready var sensitivity_slider = $SettingsPanel/TabContainer/PlayerOptions/SensitivitySlider
+@onready var raycast_demo_checkbox = $SettingsPanel/TabContainer/PlayerOptions/RaycastDemoCheckBox
 @onready var window_mode_dropdown = $SettingsPanel/TabContainer/Video/WindowModeDropdown
 @onready var resolution_dropdown = $SettingsPanel/TabContainer/Video/ResolutionDropdown
 @onready var ui_scale_slider: SpinBox = $SettingsPanel/TabContainer/Video/UIScaleSlider
@@ -71,6 +72,7 @@ func _ready() -> void:
 	$SettingsPanel/BackButton.pressed.connect(_on_back_pressed)
 	
 	sensitivity_slider.value_changed.connect(_on_sensitivity_changed)
+	raycast_demo_checkbox.toggled.connect(_on_raycast_demo_toggled)
 	window_mode_dropdown.item_selected.connect(_on_window_mode_selected)
 	resolution_dropdown.item_selected.connect(_on_resolution_selected)
 	ui_scale_slider.value_changed.connect(_on_ui_scale_changed)
@@ -159,6 +161,10 @@ func _on_sensitivity_changed(value: float) -> void:
 	if player:
 		player.mouse_sensitivity = value
 
+func _on_raycast_demo_toggled(toggled_on: bool) -> void:
+	if player and "show_raycast_laser" in player:
+		player.show_raycast_laser = toggled_on
+		
 func _on_window_mode_selected(index: int) -> void:
 	if index == 0: # Windowed
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
