@@ -15,7 +15,6 @@ var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 @onready var reset_targets_btn = $"../ControlPanel/ResetTargetsButton"
 @onready var reset_accuracy_btn = $"../ControlPanel/ResetAccuracyButton"
 @onready var raycaster = $CustomRaycaster
-# @onready var raycaster = $CustomRaycaster # Uncomment this once your C++ node is compiled
 
 var total_shots: int = 0
 var total_hits: int = 0
